@@ -189,7 +189,7 @@ Each model sees the same deterministic sample of unique documents from the entir
 
 ## Browser demo
 
-An experimental [Candle/WebAssembly demo](examples/candle-wasm/README.md) runs the published checkpoint in the browser without an inference API. It downloads the original 2.38 GB FP32 weights and requires substantial browser memory; see its README for build steps and limitations.
+An experimental [Candle/WebAssembly demo](https://valendra-tech.github.io/valendra-privacy-filter/) runs the published checkpoint in the browser without an inference API. It downloads the original 2.38 GB FP32 weights and requires substantial browser memory; see the [build instructions](examples/candle-wasm/README.md) for details and limitations.
 
 ## Python and command-line inference
 

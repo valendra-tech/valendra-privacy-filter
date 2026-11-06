@@ -2,6 +2,8 @@
 
 This experimental demo runs the published `valendra/privacy-filter-mini` checkpoint entirely in the browser using Rust, Candle and WebAssembly SIMD. The static server serves the HTML and compiled module only; the input text is not sent to an inference API.
 
+**Live demo:** <https://valendra-tech.github.io/valendra-privacy-filter/>
+
 The model revision is pinned to `62a73ef2a5a216b0e0d0d5d2aac4e869847f3983`. The demo downloads the original 2.38 GB FP32 Safetensors file from Hugging Face using bounded HTTP ranges and verifies its SHA-256 before inference. Config and tokenizer hashes are also checked. No quantized or alternative weights are used. A browser may require substantially more than 2.38 GB of available memory, and a reload downloads the weights again.
 
 ## Build and run
