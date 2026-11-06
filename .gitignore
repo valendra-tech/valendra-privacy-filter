@@ -13,3 +13,5 @@ experiments/runs/
 *.ckpt
 .env
 .env.*
+/examples/candle-wasm/target/
+/examples/candle-wasm/web/pkg/

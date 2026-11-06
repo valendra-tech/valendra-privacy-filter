@@ -187,6 +187,10 @@ Use an existing checkpoint and a checksum-verified prepared dataset. The destina
 
 Each model sees the same deterministic sample of unique documents from the entire split. Omit both `--limit` and `--sample-seed` to evaluate the complete split. Reports record dataset and document-order hashes, runtime settings, strict character-span scores, type-specific results for a common subset, and latency and memory measurements; they do not contain input text. Exact untyped and typed-common scores answer different questions, because model taxonomies and supported categories differ. FP32 is used for Valendra and GLiNER in this example; OpenAI's official runtime uses its native parameter precision. The validation data and any intermediate checkpoint are for development, not an independent final assessment. Synthetic validation data alone does not establish real-world performance.
 
+## Browser demo
+
+An experimental [Candle/WebAssembly demo](examples/candle-wasm/README.md) runs the published checkpoint in the browser without an inference API. It downloads the original 2.38 GB FP32 weights and requires substantial browser memory; see its README for build steps and limitations.
+
 ## Python and command-line inference
 
 ```python
