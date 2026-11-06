@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Privacy Filter · Candle WASM</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%230b6c5d'/%3E%3Cpath d='M20 7 9 11v8c0 7 4 11 11 14 7-3 11-7 11-14v-8L20 7Z' fill='none' stroke='white' stroke-width='3'/%3E%3C/svg%3E">
+  <style>
+    :root { color-scheme: dark; font: 15px/1.55 "SFMono-Regular", Consolas, "Liberation Mono", monospace; color: #d5e6c7; background: #0d1512; }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    main { max-width: 1080px; margin: 0 auto; padding: 28px 24px 64px; }
+    header { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-bottom: 14px; border-bottom: 1px solid #617b5e; }
+    .brand { font-weight: 700; letter-spacing: .08em; }
+    .badge { color: #0d1512; background: #a8d68f; padding: 3px 8px; font-size: 12px; font-weight: 700; }
+    .eyebrow { color: #a8d68f; font-size: 12px; letter-spacing: .12em; margin: 54px 0 10px; }
+    h1 { font-size: clamp(28px, 4.5vw, 48px); line-height: 1.1; letter-spacing: -.045em; margin: 0 0 14px; }
+    h1 span { color: #a8d68f; }
+    .intro { color: #a7bca0; max-width: 740px; }
+    .card { background: #14201a; border: 1px solid #617b5e; padding: 20px; margin-top: 20px; box-shadow: 5px 5px 0 #050a07; }
+    .row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+    button { border: 1px solid #a8d68f; border-radius: 0; padding: 9px 14px; background: #a8d68f; color: #0b1710; font: inherit; font-weight: 700; cursor: pointer; }
+    button.secondary { color: #d5e6c7; background: transparent; border-color: #718c6a; }
+    button:hover:not(:disabled) { background: #d2f0bd; color: #0b1710; }
+    button:disabled { opacity: .42; cursor: not-allowed; }
+    button:focus-visible, textarea:focus-visible { outline: 2px solid #f0cb85; outline-offset: 3px; }
+    progress { width: 100%; height: 12px; margin-top: 18px; accent-color: #a8d68f; }
+    .muted { color: #a7bca0; font-size: 13px; }
+    .error { color: #ffad9e; white-space: pre-wrap; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    h2 { color: #a8d68f; font-size: 13px; letter-spacing: .08em; margin: 0 0 12px; }
+    textarea, pre { width: 100%; min-height: 190px; padding: 14px; border: 1px solid #4b6451; border-radius: 0; background: #0b120e; color: #edf7df; font: inherit; line-height: 1.6; }
+    textarea { resize: vertical; }
+    textarea::placeholder { color: #91a68c; }
+    pre { white-space: pre-wrap; overflow-wrap: anywhere; margin: 0; }
+    ul { padding: 0; list-style: none; }
+    li { padding: 10px 0; border-bottom: 1px dashed #4b6451; overflow-wrap: anywhere; }
+    .type { color: #f0cb85; font-size: 12px; font-weight: 700; margin-right: 10px; }
+    .footer { margin-top: 26px; border-top: 1px solid #617b5e; padding-top: 14px; }
+    .footer a { color: #a8d68f; margin-right: 14px; }
+    @media (max-width: 700px) { main { padding: 20px 14px 48px; } header { align-items: flex-start; flex-direction: column; } .eyebrow { margin-top: 38px; } .grid { grid-template-columns: 1fr; gap: 0; } .card { padding: 16px; } }
+  </style>
+</head>
+<body>
+  <main>
+    <header><span class="brand">VALENDRA / RESEARCH</span><span class="badge">CANDLE + WEBASSEMBLY</span></header>
+    <p class="eyebrow">[ DEMO LOCAL / MODELO 04K ]</p>
+    <h1>PRIVACY FILTER<span>.WASM</span></h1>
+    <p class="intro">Detecta y redacta datos sensibles directamente en el navegador. El texto no se envía a una API de inferencia.</p>
+    <section class="card" aria-labelledby="model-heading">
+      <h2 id="model-heading">01 / MODELO FP32 — 2,38 GB</h2>
+      <p class="muted">Descarga los pesos públicos de Hugging Face y verifica su integridad. La carga puede tardar y requiere memoria suficiente.</p>
+      <div class="row"><button id="load" type="button">[ CARGAR MODELO ]</button><button id="cancel" class="secondary" type="button" disabled>[ CANCELAR ]</button><span id="status" role="status">Modelo no cargado</span></div>
+      <progress id="progress" max="100" value="0" aria-label="Descarga del modelo"></progress>
+      <p id="error" class="error" role="alert" hidden></p>
+    </section>
+    <div class="grid">
+      <section class="card" aria-labelledby="input-heading">
+        <h2 id="input-heading"><label for="text">02 / TEXTO ORIGINAL</label></h2>
+        <textarea id="text" placeholder="Escribe o pega un texto para analizar…"></textarea>
+        <div class="row"><button id="example" class="secondary" type="button">[ EJEMPLO ]</button><button id="detect" type="button" disabled>[ ANALIZAR ]</button></div>
+      </section>
+      <section class="card" aria-labelledby="output-heading"><h2 id="output-heading">03 / TEXTO REDACTADO</h2><pre id="output" aria-live="polite">El resultado aparecerá aquí.</pre></section>
+    </div>
+    <section class="card" aria-labelledby="entities-heading"><h2 id="entities-heading">04 / ENTIDADES DETECTADAS</h2><p id="empty" class="muted">Todavía no hay resultados.</p><ul id="entities"></ul></section>
+    <footer class="muted footer"><p>DEMO EXPERIMENTAL // MÁX. 4.096 TOKENS // PUNTUACIONES NO CALIBRADAS</p><a href="https://github.com/valendra-tech/valendra-privacy-filter/tree/research-candle-wasm-demo/examples/candle-wasm">[ CÓDIGO ]</a><a href="https://huggingface.co/valendra/privacy-filter-mini">[ PESOS ]</a></footer>
+  </main>
+  <script type="module">
+    const $ = selector => document.querySelector(selector);
+    const load = $('#load'), cancel = $('#cancel'), detect = $('#detect'), input = $('#text'), example = $('#example');
+    const status = $('#status'), progress = $('#progress'), error = $('#error'), output = $('#output');
+    const entities = $('#entities'), empty = $('#empty');
+    let worker = null, ready = false;
+    function reset() { output.textContent = 'El resultado aparecerá aquí.'; entities.replaceChildren(); empty.hidden = false; empty.textContent = 'Todavía no hay resultados.'; error.hidden = true; }
+    function startWorker() {
+      worker = new Worker('./worker.js', { type: 'module' });
+      worker.onmessage = ({ data }) => {
+        if (data.type === 'progress') { progress.value = data.received / data.total * 100; status.textContent = `${data.stage} ${(progress.value).toFixed(1)} %`; }
+        if (data.type === 'ready') { ready = true; load.disabled = true; cancel.disabled = true; detect.disabled = false; status.textContent = 'Modelo listo'; }
+        if (data.type === 'result') {
+          input.disabled = false; example.disabled = false; detect.disabled = false; detect.textContent = '[ ANALIZAR ]'; status.textContent = 'Modelo listo';
+          output.textContent = data.result.redacted; entities.replaceChildren(); empty.hidden = data.result.entities.length > 0;
+          empty.textContent = 'No se detectaron entidades.';
+          for (const item of data.result.entities) { const li = document.createElement('li'); const type = document.createElement('span'); type.className = 'type'; type.textContent = item.type; const value = document.createElement('span'); value.textContent = item.value; li.append(type, value, document.createTextNode(` · ${item.start}–${item.end} · ${(item.score * 100).toFixed(1)} %`)); entities.append(li); }
+        }
+        if (data.type === 'error') { error.textContent = data.message; error.hidden = false; input.disabled = false; example.disabled = false; detect.disabled = !ready; detect.textContent = '[ ANALIZAR ]'; if (!ready) { load.disabled = false; cancel.disabled = true; status.textContent = 'No se pudo cargar el modelo'; } else { status.textContent = 'Modelo listo'; } }
+      };
+      worker.onerror = () => { ready = false; input.disabled = false; example.disabled = false; detect.textContent = '[ ANALIZAR ]'; error.textContent = 'No se pudo iniciar el módulo WASM. Comprueba la compilación y la memoria disponible.'; error.hidden = false; load.disabled = false; cancel.disabled = true; detect.disabled = true; status.textContent = 'Error de WebAssembly'; };
+    }
+    load.addEventListener('click', () => { if (worker) worker.terminate(); startWorker(); reset(); ready = false; load.disabled = true; cancel.disabled = false; detect.disabled = true; worker.postMessage({ type: 'load' }); });
+    cancel.addEventListener('click', () => { if (worker) worker.terminate(); worker = null; ready = false; load.disabled = false; cancel.disabled = true; detect.disabled = true; progress.value = 0; status.textContent = 'Carga cancelada'; });
+    example.addEventListener('click', () => { input.value = 'Hola, soy Lucía Martín y mi correo es lucia@example.com.'; reset(); });
+    input.addEventListener('input', reset);
+    detect.addEventListener('click', () => { if (!input.value.trim()) { error.textContent = 'Introduce un texto.'; error.hidden = false; return; } reset(); input.disabled = true; example.disabled = true; detect.disabled = true; detect.textContent = '[ ANALIZANDO… ]'; status.textContent = 'Analizando localmente…'; worker.postMessage({ type: 'detect', text: input.value }); });
+  </script>
+</body>
+</html>
