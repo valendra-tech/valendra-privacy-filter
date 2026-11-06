@@ -5,6 +5,6 @@ fn official_tokenizer_offsets_can_be_mapped_to_original_unicode() {
     let tokenizer = tokenizers::Tokenizer::from_file(path).unwrap();
     let input = "💬Ana";
     let encoding = tokenizer.encode(input, false).unwrap();
-    println!("offsets={:?}", encoding.get_offsets());
-    assert!(!encoding.get_offsets().is_empty());
+    assert!(encoding.get_offsets().iter().all(|&(start, end)| input.get(start..end).is_some()));
+    assert!(encoding.get_offsets().iter().any(|&(start, end)| input.get(start..end) == Some("Ana")));
 }
