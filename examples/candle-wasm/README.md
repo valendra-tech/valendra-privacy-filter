@@ -20,6 +20,10 @@ Open <http://127.0.0.1:8099/>, click **Cargar modelo**, wait for the verified do
 
 The detector uses 512-token windows with a 64-token overlap, averages overlapping logits, performs constrained BIOES decoding and applies the secret-fragment reconciliation rules. Independent windows and requests use fresh Qwen3 state. It refuses inputs over 4,096 tokens instead of truncating them. Scores are not calibrated. This browser port is experimental; tests with a small set of inputs do not establish full numerical parity or real-world privacy protection.
 
+## GitHub Pages
+
+The live site serves the root of the `gh-pages` branch. It contains the static page, worker, range loader and generated WASM package; it does not contain model weights. `build-info.json` records the source commit and artifact hashes. Deployment is manual: merging source changes into `main` does not automatically update the live site.
+
 ## Verification
 
 ```bash
